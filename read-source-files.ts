@@ -26,7 +26,10 @@ const addToTree = (
 export const readSourceFiles = async (sourceFolder: string) => {
   const files = await readDirDeep(sourceFolder);
 
-  return files.map((d) => d.split("/")).reduce(addToTree, {});
+  return files
+    .filter((d) => d.endsWith(".md"))
+    .map((d) => d.split("/"))
+    .reduce(addToTree, {});
 };
 
 export const sourceIsFile = (

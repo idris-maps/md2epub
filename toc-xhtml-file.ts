@@ -1,4 +1,5 @@
 import { getRelativePath } from "./utils.ts";
+
 export interface FileTree {
   label: string;
   xhtml: string;

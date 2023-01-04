@@ -1,20 +1,15 @@
 import { isString, parseYaml, readArgs } from "./deps.ts";
 
 const error = {
-  noSource: [
-    "source folder is not defined",
-    "",
-    "example:",
-    "  --src=<FOLDER_WITH_MD_FILED>",
-  ].join("\n"),
-  unreadableConfig: (d: string) => `could not read config file ${d}`,
+  noSource: "source folder is not defined",
 };
 
 const getSourceFolder = (args: Record<string, unknown>) => {
-  const sourceFolder = isString(args.src) ? args.src : undefined;
+  const sourceFolder = Deno.args[0] ||
+    (isString(args.src) ? args.src : undefined);
 
   if (!sourceFolder) {
-    throw new Error(error.noSource);
+    throw error.noSource;
   }
 
   return sourceFolder;
@@ -40,27 +35,32 @@ const readConfig = (data: Record<string, unknown>): Partial<Config> => ({
   verbose: Boolean(data.verbose),
 });
 
-const readConfigFile = async (
-  args: Record<string, unknown>,
-): Promise<Partial<Config>> => {
-  if (isString(args.config)) {
-    try {
-      const configContent = await Deno.readTextFile(args.config);
-      // @ts-ignore ?
-      const data: Record<string, unknown> = parseYaml(configContent);
-      return readConfig(data);
-    } catch (err) {
-      throw new Error(error.unreadableConfig(args.config), err);
-    }
+const readYaml = async (file: string) => {
+  try {
+    const content = await Deno.readTextFile(file);
+    return parseYaml(content);
+  } catch {
+    return undefined;
   }
-  return {};
+};
+
+const readConfigFile = (
+  args: Record<string, unknown>,
+  sourceFolder: string,
+): Promise<Partial<Config>> => {
+  const configFile = isString(args.config)
+    ? args.config
+    : `${sourceFolder}/meta.yaml`;
+  // @ts-ignore ?
+  return readYaml(configFile);
 };
 
 const getConfig = async (
   args: Record<string, unknown>,
   id: string,
+  sourceFolder: string,
 ): Promise<Config> => {
-  const fromFile = await readConfigFile(args);
+  const fromFile = await readConfigFile(args, sourceFolder);
   const fromArgs = readConfig(args);
 
   return {
@@ -83,8 +83,8 @@ const createDestinationFolder = async (id: string) => {
 export const getMeta = async () => {
   const args = readArgs();
   const id = crypto.randomUUID();
-  const sourceFolder = await getSourceFolder(args);
-  const config = await getConfig(args, id);
+  const sourceFolder = getSourceFolder(args);
+  const config = await getConfig(args, id, sourceFolder);
   const destinationFolder = await createDestinationFolder(id);
 
   return {
