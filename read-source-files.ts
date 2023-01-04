@@ -1,7 +1,7 @@
-import { readDirDeep } from './deps.ts'
+import { readDirDeep } from "./deps.ts";
 
 export interface SourceFiles {
-  [key: string]: SourceFiles | { file: true }
+  [key: string]: SourceFiles | { file: true };
 }
 
 const addToTree = (
@@ -21,16 +21,14 @@ const addToTree = (
     // @ts-ignore ?
     [first]: addToTree(subtree, rest),
   };
-}
-
-export const readSourceFiles = async (sourceFolder: string) => {
-  const files = await readDirDeep(sourceFolder)
-
-  return files.map(d => d.split('/')).reduce(addToTree, {})
 };
 
+export const readSourceFiles = async (sourceFolder: string) => {
+  const files = await readDirDeep(sourceFolder);
 
+  return files.map((d) => d.split("/")).reduce(addToTree, {});
+};
 
-export const sourceIsFile = (d: SourceFiles | { file: true }): d is { file: true } =>
-  d.file && String(d.file) === 'true'
-
+export const sourceIsFile = (
+  d: SourceFiles | { file: true },
+): d is { file: true } => d.file && String(d.file) === "true";
