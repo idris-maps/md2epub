@@ -17,11 +17,11 @@ const getSourceFolder = (args: Record<string, unknown>) => {
 
 interface Config {
   author: string;
-  publisher: string;
-  title: string;
-  language: string;
-  source: string;
   filename: string;
+  language: string;
+  publisher: string;
+  source: string;
+  title: string;
   verbose: boolean;
 }
 
