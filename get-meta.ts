@@ -66,7 +66,7 @@ const getConfig = async (
     author: fromArgs.author || fromFile.author || "Unknown author",
     title: fromArgs.title || fromFile.title || "Unknown title",
     publisher: fromArgs.publisher || fromFile.publisher || "Unknown publisher",
-    language: fromArgs.language || fromFile.language || "en-UK",
+    language: fromArgs.language || fromFile.language || "en",
     source: fromArgs.source || fromFile.source || "Unknown source",
     filename: fromArgs.filename || fromFile.filename || id,
     verbose: Boolean(fromArgs.verbose) || Boolean(fromFile.verbose) || false,

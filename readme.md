@@ -45,7 +45,7 @@ Metadata is set with a `<FOLDER>/meta.yaml` file with the following keys:
 
 - author (string, default `Unkown author`)
 - filename (string, default a UUID)
-- language (string, default `en-UK`)
+- language (string, default `en`)
 - publisher (string, default `Unknown publisher`)
 - source (string, default `Unkown source`)
 - title (string, default `Unknown title`)
