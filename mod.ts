@@ -38,7 +38,6 @@ const getFiles = (fileTree: FileTree[]): string[] =>
     return [d.xhtml, ...fromChildren];
   })
     .flat()
-    .map(getRelativePath);
 
 log("writing content.opf");
 
@@ -51,7 +50,7 @@ await Deno.writeTextFile(
     title,
     language,
     source,
-    files: getFiles(fileTree),
+    files: getFiles(fileTree).map(getRelativePath),
   }),
 );
 
