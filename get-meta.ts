@@ -5,8 +5,7 @@ const error = {
 };
 
 const getSourceFolder = (args: Record<string, unknown>) => {
-  const sourceFolder = Deno.args[0] ||
-    (isString(args.src) ? args.src : undefined);
+  const sourceFolder = isString(args.src) ? args.src : Deno.args[0];
 
   if (!sourceFolder) {
     throw error.noSource;
@@ -40,7 +39,7 @@ const readYaml = async (file: string) => {
     const content = await Deno.readTextFile(file);
     return parseYaml(content);
   } catch {
-    return undefined;
+    return {};
   }
 };
 
