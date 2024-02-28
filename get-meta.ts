@@ -1,4 +1,6 @@
-import { isString, parseYaml, readArgs } from "./deps.ts";
+import { parseYaml, readArgs } from "./deps.ts";
+
+const isString = (d: unknown): d is string => Boolean(d && String(d) === d);
 
 const error = {
   noSource: "source folder is not defined",
@@ -40,7 +42,7 @@ const readYaml = async (file: string) => {
     const content = await Deno.readTextFile(file);
     return parseYaml(content);
   } catch {
-    return undefined;
+    return {};
   }
 };
 
