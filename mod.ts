@@ -1,12 +1,12 @@
 import { getMeta } from "./get-meta.ts";
-import { createPagesAndGetToc } from "./create-pages-and-get-toc.ts";
 import { contentOpfFile } from "./content-opf-file.ts";
-import { FileTree, tocXhtmlFile } from "./toc-xhtml-file.ts";
+import { tocXhtmlFile } from "./toc-xhtml-file.ts";
 import { tocNcxFile } from "./toc-ncx-file.ts";
 import { otherFiles } from "./other-files.ts";
-import { getRelativePath } from "./utils.ts";
 import { sectionXhtmlFile } from "./section-xhtml-file.ts";
 import { createEpub } from "./zip.ts";
+import { addLabelToTree, getSourceFiles } from "./get-source-files.ts";
+import { convertPage } from "./convert-page.ts";
 
 const {
   author,
@@ -25,22 +25,40 @@ const log = (msg: string) => {
   if (verbose) console.log(msg);
 };
 
-log("creating pages");
+log("reading source");
 
-const fileTree = await createPagesAndGetToc(
+const { fileTree, filesToConvert, filesToCreate } = await getSourceFiles(
   sourceFolder,
   destinationFolder + "/epub",
 );
 
-const getFiles = (fileTree: FileTree[]): string[] =>
-  fileTree.map((d) => {
-    const fromChildren = getFiles(d.children || []);
-    return [d.xhtml, ...fromChildren];
-  })
-    .flat()
-    .map(getRelativePath);
+log("converting pages");
+
+for (const file of filesToConvert) {
+  const { title } = await convertPage(file.source, file.destination);
+  addLabelToTree(fileTree, file.destination, title);
+}
+
+log("creating pages");
+
+const _filesToCreate = filesToCreate.map((file, i) => [
+  file.destination,
+  i === 0 ? sectionXhtmlFile(title, author) : sectionXhtmlFile(file.label),
+]);
+
+for (const [destination, content] of _filesToCreate) {
+  await Deno.writeTextFile(destination, content);
+}
 
 log("writing content.opf");
+
+const files = [
+  ...filesToConvert,
+  ...filesToCreate,
+].map((d) => ({
+  destination: d.destination.split("/").slice(-1)[0],
+  id: d.id,
+}));
 
 await Deno.writeTextFile(
   destinationFolder + "/epub/content.opf",
@@ -51,11 +69,16 @@ await Deno.writeTextFile(
     title,
     language,
     source,
-    files: getFiles(fileTree),
+    files,
   }),
 );
 
 log("writing toc.xhtml");
+
+const destinationIdMap = new Map<string, string>();
+for (const { id, destination } of files) {
+  destinationIdMap.set(destinationFolder + "/epub/" + destination, id);
+}
 
 await Deno.writeTextFile(
   destinationFolder + "/epub/toc.xhtml",
@@ -63,7 +86,8 @@ await Deno.writeTextFile(
     id,
     title,
     language,
-    fileTree: fileTree,
+    fileTree: fileTree.children || [],
+    destinationIdMap,
   }),
 );
 
@@ -75,15 +99,9 @@ await Deno.writeTextFile(
     id,
     title,
     language,
-    fileTree,
+    fileTree: fileTree.children || [],
+    destinationIdMap,
   }),
-);
-
-log("writing title page");
-
-await Deno.writeTextFile(
-  destinationFolder + "/epub/0000-title.xhtml",
-  sectionXhtmlFile(title, author),
 );
 
 await Promise.all(otherFiles.map(async (d) => {

@@ -12,6 +12,7 @@ export interface TocProps {
   title: string;
   language: string;
   fileTree: FileTree[];
+  destinationIdMap: Map<string, string>;
 }
 
 const flattenTree = (fileTree: FileTree[]): Omit<FileTree, "children">[] =>
@@ -38,9 +39,9 @@ export const tocXhtmlFile = (data: TocProps) =>
 	<head>
 		<title>${data.title}</title>
 	</head>
-	<body epub:type="frontmatter">
-		<nav id="toc" role="doc-toc" epub:type="toc">
-			<h2 epub:type="title">${data.title}</h2>
+	<body>
+		<div id="toc">
+			<h2>${data.title}</h2>
       <ol>
         ${
     flattenTree(data.fileTree).map((d) =>
@@ -48,7 +49,7 @@ export const tocXhtmlFile = (data: TocProps) =>
     ).join("\n")
   }
       </ol>
-		</nav>
+		</div>
 	</body>
 </html>
 `.trim();

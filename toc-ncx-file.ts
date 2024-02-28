@@ -1,17 +1,20 @@
 import type { FileTree, TocProps } from "./toc-xhtml-file.ts";
-import { getFileId, getRelativePath, sanitizeXmlString } from "./utils.ts";
+import { getRelativePath, sanitizeXmlString } from "./utils.ts";
 
 const INDENT = "  ";
 
 const renderNav = (
   { label, xhtml, children, playOrder }: FileTree,
+  destinationIdMap: Map<string, string>,
   indent = INDENT,
 ): string => {
   const childs = children
-    ? children.map((d) => renderNav(d, indent + INDENT))
+    ? children.map((d) => renderNav(d, destinationIdMap, indent + INDENT))
     : [];
   return [
-    `<navPoint id="${getFileId(xhtml)}" playOrder="${playOrder}">`,
+    `<navPoint id="epub-${
+      destinationIdMap.get(xhtml)
+    }" playOrder="${playOrder}">`,
     `${INDENT}<navLabel><text>${sanitizeXmlString(label)}</text></navLabel>`,
     `${INDENT}<content src="${getRelativePath(xhtml)}"/>`,
     ...childs,
@@ -30,11 +33,11 @@ export const tocNcxFile = (data: TocProps) =>
   <text>${sanitizeXmlString(data.title)}</text>
 </docTitle>
 <navMap id="navmap">
-  <navPoint id="${getFileId("0000-title.xhtml")}" playOrder="1">
-    <navLabel><text>${sanitizeXmlString(data.title)}</text></navLabel>
-    <content src="0000-title.xhtml"/>
-  </navPoint>
-${data.fileTree.map((d) => renderNav(d, INDENT)).join("\n")}
+${
+    data.fileTree.map((d) => renderNav(d, data.destinationIdMap, INDENT)).join(
+      "\n",
+    )
+  }
 </navMap>
 </ncx>
 `.trim();
