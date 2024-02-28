@@ -8,7 +8,7 @@ Convert a folder with markdown files to an
 Requires [deno](https://deno.land/manual@v1.29.1/getting_started/installation)
 
 ```
-deno install -n md2epub --allow-read --allow-write https://deno.land/x/md2epub@v0.0.1/mod.ts
+deno install -n md2epub --allow-read --allow-write https://deno.land/x/md2epub@v0.0.2/mod.ts
 ```
 
 ## Usage
