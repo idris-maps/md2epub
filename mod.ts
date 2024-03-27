@@ -10,6 +10,7 @@ import { convertPage } from "./convert-page.ts";
 
 const {
   author,
+  cover,
   destinationFolder,
   filename,
   id,
@@ -70,6 +71,7 @@ await Deno.writeTextFile(
     language,
     source,
     files,
+    cover,
   }),
 );
 
@@ -99,7 +101,10 @@ await Deno.writeTextFile(
     id,
     title,
     language,
-    fileTree: fileTree.children || [],
+    fileTree: fileTree ? [
+      { label: 'Title', xhtml: fileTree.xhtml, playOrder: fileTree.playOrder },
+      ...(fileTree.children || []),
+    ] : [],
     destinationIdMap,
   }),
 );
@@ -115,6 +120,17 @@ await Promise.all(otherFiles.map(async (d) => {
     d.content,
   );
 }));
+
+if (cover) {
+  try {
+    await Deno.copyFile(
+      sourceFolder + '/' + cover,
+      destinationFolder + '/epub/' + cover,
+    )
+  } catch (err) {
+    throw new Error(`Could not move cover ${cover} to epub`, err)
+  }
+}
 
 log("creating epub");
 
