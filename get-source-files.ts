@@ -56,7 +56,7 @@ const readDirRecursive = async (
 const toFileTree = (
   destinationFolder: string,
   folder: Folder,
-  playOrder = -1,
+  playOrder = 0,
 ): [FileTree, number] => {
   playOrder = playOrder + 1;
   const currentTree: FileTree & { children: FileTree[] } = {

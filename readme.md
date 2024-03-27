@@ -8,7 +8,7 @@ Convert a folder with markdown files to an
 Requires [deno](https://deno.land/manual@v1.29.1/getting_started/installation)
 
 ```
-deno install -n md2epub --allow-read --allow-write https://deno.land/x/md2epub@v0.0.2/mod.ts
+deno install -n md2epub --allow-read --allow-write https://deno.land/x/md2epub/mod.ts
 ```
 
 ## Usage
@@ -30,6 +30,7 @@ book
 ├── 2. Second part
 │   ├── 01-some-chapter.md
 │   └── 02-the-end.md
+├── cover.jpg
 └── meta.yaml
 ```
 
@@ -49,6 +50,7 @@ Metadata is set with a `<FOLDER>/meta.yaml` file with the following keys:
 - publisher (string, default `Unknown publisher`)
 - source (string, default `Unkown source`)
 - title (string, default `Unknown title`)
+- cover (string, no default)
 
 Example:
 
@@ -59,4 +61,5 @@ language: en-US
 publisher: Books Inc.
 source: https://bo.oks
 title: My book
+cover: cover.jpg
 ```

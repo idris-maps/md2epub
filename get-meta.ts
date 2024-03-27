@@ -25,6 +25,7 @@ interface Config {
   source: string;
   title: string;
   verbose: boolean;
+  cover?: string;
 }
 
 const readConfig = (data: Record<string, unknown>): Partial<Config> => ({
@@ -73,6 +74,7 @@ const getConfig = async (
     source: fromArgs.source || fromFile.source || "Unknown source",
     filename: fromArgs.filename || fromFile.filename || id,
     verbose: Boolean(fromArgs.verbose) || Boolean(fromFile.verbose) || false,
+    cover: fromArgs.cover || fromFile.cover,
   };
 };
 
