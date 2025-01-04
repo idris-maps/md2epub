@@ -21,7 +21,7 @@ const addFile = async (
   path: string[] = [],
   log: (d: string) => void,
 ) => {
-  const file = await Deno.readTextFile([...path, name].join("/"));
+  const file = await Deno.readFile([...path, name].join("/"));
   log(" - adding " + name);
   zip.addFile(name, file);
 };

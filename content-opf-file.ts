@@ -30,12 +30,13 @@ export const contentOpfFile = (
     <dc:publisher id="publisher">${sanitizeXmlString(publisher)}</dc:publisher>
     <dc:creator id="author">${sanitizeXmlString(author)}</dc:creator>
     <dc:title id="title">${sanitizeXmlString(title)}</dc:title>
-    <dc:language>${sanitizeXmlString(language)}</dc:language>
+    <dc:language>${sanitizeXmlString(language.slice(0, 2))}</dc:language>
     <dc:source>${sanitizeXmlString(source)}</dc:source>
+    <meta name="schema:accessMode" content="textual"/>
     ${cover ? `<meta name="cover" content="${cover}"/>` : ''}
   </metadata>
   <manifest>
-    ${cover ? `<item href="${cover}" id="${cover}" media-type="${getCoverMediaType(cover)}" properties="cover-image"/>` : ''}
+    ${cover ? `<item href="${cover}" id="${cover}" media-type="${getCoverMediaType(cover)}" />` : ''}
 ${
     files.map((d) =>
       `    <item href="${d.destination}" id="epub-${d.id}" media-type="application/xhtml+xml"/>`
@@ -48,4 +49,4 @@ ${
 ${files.map((d) => `    <itemref idref="epub-${d.id}"/>`).join("\n")}
   </spine>
 </package>
-`.trim();
+`.split('\n').filter(d => d.trim() !== '').join('\n');
