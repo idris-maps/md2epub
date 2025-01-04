@@ -1,4 +1,4 @@
-import { toHtml, ParseFlags } from "./deps.ts";
+import { ParseFlags, toHtml } from "./deps.ts";
 import { createFolderRecursive } from "./create-folder-recursive.ts";
 import { init, last } from "./utils.ts";
 
@@ -47,12 +47,15 @@ export const convertPage = async (fileName: string, xhtml: string) => {
     title = last(fileName.split(".md")[0].split("/"));
   }
 
-  const originalHtml = await toHtml(md, { format: 'xhtml', parseFlags: ParseFlags.DEFAULT });
+  const originalHtml = await toHtml(md, {
+    format: "xhtml",
+    parseFlags: ParseFlags.DEFAULT,
+  });
   const html = originalHtml
     // remove empty link tags
-    .replace(/<a\b[^>]*><\/a>/g, '')
+    .replace(/<a\b[^>]*><\/a>/g, "")
     // remove aria-hidden
-    .replaceAll(' aria-hidden="true"', "")
+    .replaceAll(' aria-hidden="true"', "");
 
   const file = [start(title), html, end]
     .join("\n");

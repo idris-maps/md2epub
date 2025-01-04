@@ -101,10 +101,16 @@ await Deno.writeTextFile(
     id,
     title,
     language,
-    fileTree: fileTree ? [
-      { label: 'Title', xhtml: fileTree.xhtml, playOrder: fileTree.playOrder },
-      ...(fileTree.children || []),
-    ] : [],
+    fileTree: fileTree
+      ? [
+        {
+          label: "Title",
+          xhtml: fileTree.xhtml,
+          playOrder: fileTree.playOrder,
+        },
+        ...(fileTree.children || []),
+      ]
+      : [],
     destinationIdMap,
   }),
 );
@@ -124,11 +130,11 @@ await Promise.all(otherFiles.map(async (d) => {
 if (cover) {
   try {
     await Deno.copyFile(
-      sourceFolder + '/' + cover,
-      destinationFolder + '/epub/' + cover,
-    )
+      sourceFolder + "/" + cover,
+      destinationFolder + "/epub/" + cover,
+    );
   } catch (err) {
-    throw new Error(`Could not move cover ${cover} to epub`, err)
+    throw new Error(`Could not move cover ${cover} to epub`, err);
   }
 }
 

@@ -12,14 +12,15 @@ export interface ContentProps {
 }
 
 const getCoverMediaType = (cover: string) => {
-  if (cover.endsWith('.svg')) return 'image/svg+xml'
-  if (cover.endsWith('.jpg') || cover.endsWith('.jpeg')) return 'image/jpeg'
-  if (cover.endsWith('.png')) return 'image/png'
-  return ''
-}
+  if (cover.endsWith(".svg")) return "image/svg+xml";
+  if (cover.endsWith(".jpg") || cover.endsWith(".jpeg")) return "image/jpeg";
+  if (cover.endsWith(".png")) return "image/png";
+  return "";
+};
 
 export const contentOpfFile = (
-  { id, files, publisher, author, title, language, source, cover }: ContentProps,
+  { id, files, publisher, author, title, language, source, cover }:
+    ContentProps,
 ) =>
   `
 <?xml version="1.0" encoding="utf-8"?>
@@ -33,10 +34,16 @@ export const contentOpfFile = (
     <dc:language>${sanitizeXmlString(language.slice(0, 2))}</dc:language>
     <dc:source>${sanitizeXmlString(source)}</dc:source>
     <meta name="schema:accessMode" content="textual"/>
-    ${cover ? `<meta name="cover" content="${cover}"/>` : ''}
+    ${cover ? `<meta name="cover" content="${cover}"/>` : ""}
   </metadata>
   <manifest>
-    ${cover ? `<item href="${cover}" id="${cover}" media-type="${getCoverMediaType(cover)}" />` : ''}
+    ${
+    cover
+      ? `<item href="${cover}" id="${cover}" media-type="${
+        getCoverMediaType(cover)
+      }" />`
+      : ""
+  }
 ${
     files.map((d) =>
       `    <item href="${d.destination}" id="epub-${d.id}" media-type="application/xhtml+xml"/>`
@@ -49,4 +56,4 @@ ${
 ${files.map((d) => `    <itemref idref="epub-${d.id}"/>`).join("\n")}
   </spine>
 </package>
-`.split('\n').filter(d => d.trim() !== '').join('\n');
+`.split("\n").filter((d) => d.trim() !== "").join("\n");
